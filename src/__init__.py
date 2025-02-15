@@ -27,12 +27,12 @@ class CommonCrawlContent:
     )
 
     def gen_index_records(self):
-        for index in all_available_indexes()[:2]:
+        for index in all_available_indexes():
             yield from self.process_single_index(index["cdx-api"])
 
     @property
     def data_path(self):
-        return Path("data" / self.target_url)
+        return Path("data") / self.target_url
 
     def process_single_index(self, index_cdx: str):
         index_url = urlunparse(
@@ -78,3 +78,7 @@ class CommonCrawlContent:
                     (self.data_path / timestamp).write_bytes(
                         warc_record.content_stream().read()
                     )
+
+    def save_all(self):
+        self.data_path.mkdir(exist_ok=True, parents=True)
+        list(map(self.iter_pages, self.gen_index_records()))
