@@ -30,7 +30,12 @@ class CommonCrawlContent:
     )
 
     def gen_index_records(self):
-        for index in all_available_indexes()[: self.recent_num]:
+        for i, index in enumerate(all_available_indexes()[: self.recent_num]):
+            if i == 0:
+                result = list(self.process_single_index(index_cdx=index["cdx-api"]))
+                if len(result) == 0:
+                    raise ValueError(f"{self.target_url} not likely to be crawled.")
+                yield from result
             yield from self.process_single_index(index["cdx-api"])
 
     @property
