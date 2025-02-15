@@ -1,3 +1,4 @@
+import datetime
 import json
 
 # For parsing WARC records:
@@ -9,6 +10,7 @@ from urllib.error import URLError
 from urllib.parse import quote, quote_plus, urlencode, urljoin, urlunparse
 from urllib.request import Request, urlopen
 
+import crawl4ai
 import requests
 import tqdm
 import tqdm.autonotebook
@@ -92,3 +94,16 @@ class CommonCrawlContent:
         list(
             map(self.iter_pages, tqdm.autonotebook.tqdm(list(self.gen_index_records())))
         )
+ 
+    def get_timestamp_and_pure_text(self):
+        return [
+            (
+                datetime.datetime.strptime(path.stem, "%Y%m%d%H%M%S"),
+                print(
+                    crawl4ai.html2text.html2text(
+                        path.read_text(),
+                    )
+                ),
+            )
+            for path in self.data_path.glob("*.html")
+        ]
