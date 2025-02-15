@@ -8,6 +8,10 @@ import plotly.express as px
 import streamlit as st
 from dotenv import load_dotenv
 from pydantic import BaseModel
+import tqdm
+import tqdm.autonotebook
+
+from src import CommonCrawlContent
 
 # Load environment variables
 load_dotenv()
@@ -70,7 +74,6 @@ def generate_favorability_data(topic1, topic2, start_date, end_date):
 
 
 if __name__ == "__main__":
-
     st.set_page_config(page_title="Topic Favorability Comparison", layout="wide")
 
     st.title("Topic Favorability Comparison Over Time")
@@ -81,9 +84,9 @@ if __name__ == "__main__":
         field = st.text_input("Enter the field", value="Fintech")
 
     with col2:
-        policy = st.text_input(
-            "Enter the policy",
-            value="This government shall provide more corporation tax for fintech start-ups",
+        policy_url = st.text_input(
+            "Enter the policy url",
+            value="https://iuk-business-connect.org.uk/opportunities",
         )
 
     # start_date = st.date_input("Start date", value=pd.to_datetime("2023-01-01"))
@@ -91,12 +94,14 @@ if __name__ == "__main__":
 
     if st.button("Generate Favorability Data and Features"):
         with st.spinner("Generating features and data..."):
-            # Generate features
-            topic1_features = generate_policy(policy)
-            topic2_features = generate_feasibility(policy, field)
-            st.write(topic1_features)
-            st.write(topic2_features)
-
+            scraper = CommonCrawlContent(policy_url, -1)
+            result = {}
+            for time, policies in tqdm.autonotebook.tqdm(
+                scraper.get_timestamp_and_pure_text()
+            ):
+                result[time] = generate_feasibility(policies, "Fintech")
+            result = pd.Series(result)
+        st.line_chart(result)
 
     # if st.button("Generate Favorability Data and Features"):
     #     if start_date < end_date:
