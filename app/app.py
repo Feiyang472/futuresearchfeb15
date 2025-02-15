@@ -133,7 +133,9 @@ class CommonCrawlContent:
             file = f"{field}_responses" / self.data_path / f"{time.isoformat()}.txt"
             (f"{field}_responses" / self.data_path).mkdir(parents=True, exist_ok=True)
             if file.is_file():
-                result[time] = ResponseTemplate.model_validate(json.loads(file.read_text()))
+                result[time] = ResponseTemplate.model_validate(
+                    json.loads(file.read_text())
+                )
             else:
                 result[time] = generate_feasibility(policies, field)
                 file.write_text(result[time].model_dump_json())
@@ -148,37 +150,19 @@ client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class ResponseTemplate(BaseModel):
     value: float
+    confidence_level: float
     summary_reason: str
 
 
-def generate_policy(field):
-    # Generate a comma-separated list of key words to identify relevant government policies related to a start-up in the {topic} field.
-    prompt = f"Generate a comma-separated list of 10 key words to identify relevant government policies related to a start-up in the {field} field."
-    response = client.beta.chat.completions.parse(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful lawyer who understands the US/UK legal/governmental system very well. You want to help a potential investor assess the feasibility of a start-up through regulatory policies",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=200,
-        n=1,
-        temperature=0.7,
-    )
-    return response.choices[0].message.parsed
-
-
-def generate_feasibility(policy, field):
+def generate_feasibility(policy, field,):
     # Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
-    prompt = f"Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
+    prompt = f"Generate a score number between +1 (very supportive / favorable) and -1 (very unsupportive / unfavorable) to indicate whether the following policy (in this case, Innovate UK grant scheme) '{policy}' supports this particular start-up field '{field}'; your output is this number plus always a short rationale of less than 3 sentences. Also generate a confidence level of a number that is between 0 and 1 to describe how confident you are about the score."
     response = client.beta.chat.completions.parse(
         model="gpt-4o",
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant that can assess whether the policy supports the start-up field in order to assess the feasibility of that business at that time in history based on regulation",
+                "content": "You are a helpful assistant. You will have received grant info from Innovate UK, and a start-up field that your audience is planning to build a start-up in. Now, based on the number of available grants relevant to that field, and your observation on the relevance, scale, accessibility, and ease of application, your task is to assess how supportive / favorable is the grant scheme as a whole towards that particular industry or start-up field. A very supportive / favorable output would be: more than 2 relevant grant schemes that seem to be of a big scale, highly accessible, and easy to apply. A completely not supportive / favorable grant scheme would look like no relevant grant at all. You should be very specific and reasonable in your assessment; you should also give a rationale for why you give this particular score, along with your confidence level.",
             },
             {"role": "user", "content": prompt},
         ],
@@ -225,10 +209,19 @@ if __name__ == "__main__":
         with st.spinner("Generating features and data..."):
             scraper = CommonCrawlContent(policy_url, -1)
 
-            result = pd.Series(
-                {k: v.value for k, v in scraper.gen_chat_response(field=field).items()}
+            structured_result = scraper.gen_chat_response(field=field)
+
+            numerical_result = pd.Series(
+                {k: v.value for k, v in structured_result.items()}
             )
-        st.line_chart(result)
+            text_result = pd.DataFrame(
+                [
+                    {"date": k, "reason": v.summary_reason}
+                    for k, v in structured_result.items()
+                ]
+            )
+        st.line_chart(numerical_result)
+        st.table(text_result.sort_values("date"))
 
     # if st.button("Generate Favorability Data and Features"):
     #     if start_date < end_date:
