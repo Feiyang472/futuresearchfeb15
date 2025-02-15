@@ -69,97 +69,99 @@ def generate_favorability_data(topic1, topic2, start_date, end_date):
     return df
 
 
-st.set_page_config(page_title="Topic Favorability Comparison", layout="wide")
+if __name__ == "__main__":
 
-st.title("Topic Favorability Comparison Over Time")
+    st.set_page_config(page_title="Topic Favorability Comparison", layout="wide")
 
-col1, col2 = st.columns(2)
+    st.title("Topic Favorability Comparison Over Time")
 
-with col1:
-    field = st.text_input("Enter the field", value="Fintech")
+    col1, col2 = st.columns(2)
 
-with col2:
-    policy = st.text_input(
-        "Enter the policy",
-        value="This government shall provide more corporation tax for fintech start-ups",
+    with col1:
+        field = st.text_input("Enter the field", value="Fintech")
+
+    with col2:
+        policy = st.text_input(
+            "Enter the policy",
+            value="This government shall provide more corporation tax for fintech start-ups",
+        )
+
+    # start_date = st.date_input("Start date", value=pd.to_datetime("2023-01-01"))
+    # end_date = st.date_input("End date", value=pd.to_datetime("2023-12-31"))
+
+    if st.button("Generate Favorability Data and Features"):
+        with st.spinner("Generating features and data..."):
+            # Generate features
+            topic1_features = generate_policy(policy)
+            topic2_features = generate_feasibility(policy, field)
+            st.write(topic1_features)
+            st.write(topic2_features)
+
+
+    # if st.button("Generate Favorability Data and Features"):
+    #     if start_date < end_date:
+    #         with st.spinner("Generating features and data..."):
+    #             # Generate features
+    #             topic1_features = generate_features(topic1)
+    #             topic2_features = generate_features(topic2)
+
+    #             # Generate tag points
+    #             tag_points = generate_tag_points(topic1, topic2)
+
+    #             # Generate favorability data
+    #             df = generate_favorability_data(topic1, topic2, start_date, end_date)
+
+    #             # Display features
+    #             st.subheader("Key Features")
+    #             col1, col2 = st.columns(2)
+    #             with col1:
+    #                 st.write(f"{topic1} Features:")
+    #                 for feature in topic1_features:
+    #                     st.write(f"- {feature}")
+    #             with col2:
+    #                 st.write(f"{topic2} Features:")
+    #                 for feature in topic2_features:
+    #                     st.write(f"- {feature}")
+
+    #             # Create the line chart
+    #             fig = px.line(df, x='Date', y=[topic1, topic2], title=f"Favorability Comparison: {topic1} vs {topic2}")
+    #             fig.update_layout(yaxis_title="Favorability", xaxis_title="Date")
+
+    #             # Add annotation points
+    #             num_annotations = min(len(tag_points), 5)
+    #             annotation_dates = random.sample(df['Date'].tolist(), num_annotations)
+    #             annotation_dates.sort()
+
+    #             for i, date in enumerate(annotation_dates):
+    #                 y_position = df.loc[df['Date'] == date, topic1].values[0]
+    #                 fig.add_annotation(
+    #                     x=date,
+    #                     y=y_position,
+    #                     text=f"Point {i+1}",
+    #                     showarrow=True,
+    #                     arrowhead=2,
+    #                     arrowsize=1,
+    #                     arrowwidth=2,
+    #                     arrowcolor="#636363",
+    #                     ax=0,
+    #                     ay=-40
+    #                 )
+
+    #             st.plotly_chart(fig, use_container_width=True)
+
+    #             # Display tag points
+    #             st.subheader("Key Events/Quotes")
+    #             for i, (date, tag) in enumerate(zip(annotation_dates, tag_points)):
+    #                 st.write(f"**Point {i+1} ({date.strftime('%Y-%m-%d')}):** {tag}")
+
+    #             st.write("Sample Data:")
+    #             st.dataframe(df)
+    #     else:
+    #         st.error("Error: End date must be after the start date.")
+
+    st.sidebar.header("About")
+    st.sidebar.info(
+        "This Streamlit app compares the favorability of two topics over time. "
+        "Enter the topics you want to compare, select a date range, and click 'Generate Favorability Data and Features' "
+        "to see a time series visualization of their relative favorability, along with key features and events."
     )
-
-# start_date = st.date_input("Start date", value=pd.to_datetime("2023-01-01"))
-# end_date = st.date_input("End date", value=pd.to_datetime("2023-12-31"))
-
-if st.button("Generate Favorability Data and Features"):
-    with st.spinner("Generating features and data..."):
-        # Generate features
-        topic1_features = generate_policy(policy)
-        topic2_features = generate_feasibility(policy, field)
-        st.write(topic1_features)
-        st.write(topic2_features)
-
-
-# if st.button("Generate Favorability Data and Features"):
-#     if start_date < end_date:
-#         with st.spinner("Generating features and data..."):
-#             # Generate features
-#             topic1_features = generate_features(topic1)
-#             topic2_features = generate_features(topic2)
-
-#             # Generate tag points
-#             tag_points = generate_tag_points(topic1, topic2)
-
-#             # Generate favorability data
-#             df = generate_favorability_data(topic1, topic2, start_date, end_date)
-
-#             # Display features
-#             st.subheader("Key Features")
-#             col1, col2 = st.columns(2)
-#             with col1:
-#                 st.write(f"{topic1} Features:")
-#                 for feature in topic1_features:
-#                     st.write(f"- {feature}")
-#             with col2:
-#                 st.write(f"{topic2} Features:")
-#                 for feature in topic2_features:
-#                     st.write(f"- {feature}")
-
-#             # Create the line chart
-#             fig = px.line(df, x='Date', y=[topic1, topic2], title=f"Favorability Comparison: {topic1} vs {topic2}")
-#             fig.update_layout(yaxis_title="Favorability", xaxis_title="Date")
-
-#             # Add annotation points
-#             num_annotations = min(len(tag_points), 5)
-#             annotation_dates = random.sample(df['Date'].tolist(), num_annotations)
-#             annotation_dates.sort()
-
-#             for i, date in enumerate(annotation_dates):
-#                 y_position = df.loc[df['Date'] == date, topic1].values[0]
-#                 fig.add_annotation(
-#                     x=date,
-#                     y=y_position,
-#                     text=f"Point {i+1}",
-#                     showarrow=True,
-#                     arrowhead=2,
-#                     arrowsize=1,
-#                     arrowwidth=2,
-#                     arrowcolor="#636363",
-#                     ax=0,
-#                     ay=-40
-#                 )
-
-#             st.plotly_chart(fig, use_container_width=True)
-
-#             # Display tag points
-#             st.subheader("Key Events/Quotes")
-#             for i, (date, tag) in enumerate(zip(annotation_dates, tag_points)):
-#                 st.write(f"**Point {i+1} ({date.strftime('%Y-%m-%d')}):** {tag}")
-
-#             st.write("Sample Data:")
-#             st.dataframe(df)
-#     else:
-#         st.error("Error: End date must be after the start date.")
-
-st.sidebar.header("About")
-st.sidebar.info(
-    "This Streamlit app compares the favorability of two topics over time. "
-    "Enter the topics you want to compare, select a date range, and click 'Generate Favorability Data and Features' "
-    "to see a time series visualization of their relative favorability, along with key features and events."
-)
