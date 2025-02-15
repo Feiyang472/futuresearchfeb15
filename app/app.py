@@ -1,67 +1,78 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import numpy as np
-import openai
-from dotenv import load_dotenv
 import os
 import random
+
+import numpy as np
+import openai
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
+client = openai.OpenAI()
 # Load environment variables
 load_dotenv()
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
 class ResponseTemplate(BaseModel):
-    value:float
+    value: float
+
 
 def generate_policy(field):
     # Generate a comma-separated list of key words to identify relevant government policies related to a start-up in the {topic} field.
     prompt = f"Generate a comma-separated list of 10 key words to identify relevant government policies related to a start-up in the {field} field."
-    response = openai.ChatCompletion.create(
+    response = client.beta.chat.completions.parse(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful lawyer who understands the US/UK legal/governmental system very well. You want to help a potential investor assess the feasibility of a start-up through regulatory policies"},
-            {"role": "user", "content": prompt}
+            {
+                "role": "system",
+                "content": "You are a helpful lawyer who understands the US/UK legal/governmental system very well. You want to help a potential investor assess the feasibility of a start-up through regulatory policies",
+            },
+            {"role": "user", "content": prompt},
         ],
         max_tokens=200,
         n=1,
         temperature=0.7,
     )
-    features = response.choices[0].message['content'].strip().split(", ")
+    features = response.choices[0].message["content"].strip().split(", ")
     return features[:10]  # Ensure we only return 3 features
+
 
 def generate_feasibility(policy, field):
     # Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
     prompt = f"Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
-    response = openai.ChatCompletion.create(
+    response = client.beta.chat.completions.parse(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant that can assess whether the policy supports the start-up field in order to assess the feasibility of that business at that time in history based on regulation"},
-            {"role": "user", "content": prompt}
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that can assess whether the policy supports the start-up field in order to assess the feasibility of that business at that time in history based on regulation",
+            },
+            {"role": "user", "content": prompt},
         ],
         response_format=ResponseTemplate,
         max_tokens=200,
         n=1,
         temperature=0.7,
     )
-    tag_points = response.choices[0].message['content'].strip().split("\n")
+    tag_points = response.choices[0].message["content"].strip().split("\n")
     return tag_points[:1]  # Ensure we only return the specified number of points
 
+
 def generate_favorability_data(topic1, topic2, start_date, end_date):
-    date_range = pd.date_range(start=start_date, end=end_date, freq='D')
+    date_range = pd.date_range(start=start_date, end=end_date, freq="D")
     topic1_favorability = np.random.randint(30, 71, size=len(date_range)) / 100
     topic2_favorability = np.random.randint(30, 71, size=len(date_range)) / 100
-    
-    df = pd.DataFrame({
-        'Date': date_range,
-        topic1: topic1_favorability,
-        topic2: topic2_favorability
-    })
-    
+
+    df = pd.DataFrame(
+        {"Date": date_range, topic1: topic1_favorability, topic2: topic2_favorability}
+    )
+
     return df
+
 
 st.set_page_config(page_title="Topic Favorability Comparison", layout="wide")
 
@@ -73,19 +84,21 @@ with col1:
     field = st.text_input("Enter the field", value="Fintech")
 
 with col2:
-    policy = st.text_input("Enter the policy", value="This government shall provide more corporation tax for fintech start-ups")
+    policy = st.text_input(
+        "Enter the policy",
+        value="This government shall provide more corporation tax for fintech start-ups",
+    )
 
 # start_date = st.date_input("Start date", value=pd.to_datetime("2023-01-01"))
 # end_date = st.date_input("End date", value=pd.to_datetime("2023-12-31"))
 
 if st.button("Generate Favorability Data and Features"):
     with st.spinner("Generating features and data..."):
-        #Generate features
+        # Generate features
         topic1_features = generate_policy(policy)
         topic2_features = generate_feasibility(policy, field)
         st.write(topic1_features)
         st.write(topic2_features)
-        
 
 
 # if st.button("Generate Favorability Data and Features"):
@@ -155,4 +168,3 @@ st.sidebar.info(
     "Enter the topics you want to compare, select a date range, and click 'Generate Favorability Data and Features' "
     "to see a time series visualization of their relative favorability, along with key features and events."
 )
-
