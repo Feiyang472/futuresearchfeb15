@@ -133,7 +133,7 @@ class CommonCrawlContent:
             file = f"{field}_responses" / self.data_path / f"{time.isoformat()}.txt"
             (f"{field}_responses" / self.data_path).mkdir(parents=True, exist_ok=True)
             if file.is_file():
-                result[time] = ResponseTemplate.model_validate(file.read_bytes())
+                result[time] = ResponseTemplate.model_validate(json.loads(file.read_text()))
             else:
                 result[time] = generate_feasibility(policies, field)
                 file.write_text(result[time].model_dump_json())
@@ -224,7 +224,9 @@ if __name__ == "__main__":
         with st.spinner("Generating features and data..."):
             scraper = CommonCrawlContent(policy_url, -1)
 
-            result = pd.Series(scraper.gen_chat_response(field=field))
+            result = pd.Series(
+                {k: v.value for k, v in scraper.gen_chat_response(field=field).items()}
+            )
         st.line_chart(result)
 
     # if st.button("Generate Favorability Data and Features"):
