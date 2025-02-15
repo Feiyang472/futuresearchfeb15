@@ -125,6 +125,21 @@ class CommonCrawlContent:
             for path in self.data_path.glob("*.html")
         ]
 
+    def gen_chat_response(self, field: str):
+        result = dict[str, ResponseTemplate]()
+        for time, policies in tqdm.autonotebook.tqdm(
+            scraper.get_timestamp_and_pure_text()
+        ):
+            file = f"{field}_responses" / self.data_path / f"{time.isoformat()}.txt"
+            (f"{field}_responses" / self.data_path).mkdir(parents=True, exist_ok=True)
+            if file.is_file():
+                result[time] = ResponseTemplate.model_validate(file.read_bytes())
+            else:
+                result[time] = generate_feasibility(policies, field)
+                file.write_text(result[time].model_dump_json())
+
+        return result
+
 
 # Load environment variables
 load_dotenv()
@@ -208,12 +223,8 @@ if __name__ == "__main__":
     if st.button("Generate Favorability Data and Features"):
         with st.spinner("Generating features and data..."):
             scraper = CommonCrawlContent(policy_url, -1)
-            result = {}
-            for time, policies in tqdm.autonotebook.tqdm(
-                scraper.get_timestamp_and_pure_text()
-            ):
-                result[time] = generate_feasibility(policies, "Fintech")
-            result = pd.Series(result)
+
+            result = pd.Series(scraper.gen_chat_response(field=field))
         st.line_chart(result)
 
     # if st.button("Generate Favorability Data and Features"):
