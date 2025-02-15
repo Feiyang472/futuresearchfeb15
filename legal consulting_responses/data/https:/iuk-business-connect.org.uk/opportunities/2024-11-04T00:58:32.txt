@@ -1,0 +1,1 @@
+{"value":-0.5,"confidence_level":0.7,"summary_reason":"The Innovate UK grant schemes do not explicitly mention or target the legal consulting field directly. While there are opportunities for business growth and innovation in broader sectors, the lack of specific grants or support for legal consulting makes the scheme less supportive for this field."}
