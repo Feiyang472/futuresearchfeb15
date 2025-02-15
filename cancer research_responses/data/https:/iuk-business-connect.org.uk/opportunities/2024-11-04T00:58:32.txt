@@ -1,0 +1,1 @@
+{"value":0.4,"confidence_level":0.7,"summary_reason":"The grant scheme contains several opportunities relevant to health and life sciences, including the 'Launchpad: life and health sciences, Northern Ireland' which offers substantial funding. However, specific grants targeted directly at cancer research are not evident, indicating moderate support for this field."}
