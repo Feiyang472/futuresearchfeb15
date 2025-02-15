@@ -216,12 +216,12 @@ if __name__ == "__main__":
             )
             text_result = pd.DataFrame(
                 [
-                    {"date": k, "reason": v.summary_reason}
+                    {"date": k, **v.model_dump()}
                     for k, v in structured_result.items()
                 ]
             )
         st.line_chart(numerical_result)
-        st.table(text_result.sort_values("date"))
+        st.table(text_result.sort_values("date", ignore_index=True))
 
     # if st.button("Generate Favorability Data and Features"):
     #     if start_date < end_date:
