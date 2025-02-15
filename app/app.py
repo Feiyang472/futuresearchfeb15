@@ -34,15 +34,14 @@ def generate_policy(field):
         n=1,
         temperature=0.7,
     )
-    features = response.choices[0].message["content"].strip().split(", ")
-    return features[:10]  # Ensure we only return 3 features
+    return response.choices[0].message.parsed
 
 
 def generate_feasibility(policy, field):
     # Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
     prompt = f"Generate a number between +1 (very supportive) and -1 (very unsupportive) to indicate whether the following policy '{policy}' supports the start-up field '{field}'"
     response = client.beta.chat.completions.parse(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[
             {
                 "role": "system",
@@ -55,8 +54,7 @@ def generate_feasibility(policy, field):
         n=1,
         temperature=0.7,
     )
-    tag_points = response.choices[0].message["content"].strip().split("\n")
-    return tag_points[:1]  # Ensure we only return the specified number of points
+    return response.choices[0].message.parsed
 
 
 def generate_favorability_data(topic1, topic2, start_date, end_date):
