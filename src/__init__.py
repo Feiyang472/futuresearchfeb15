@@ -1,6 +1,7 @@
 import json
 
 # For parsing WARC records:
+from pathlib import Path
 import urllib
 from dataclasses import dataclass
 from typing import ClassVar, NamedTuple
@@ -29,6 +30,10 @@ class CommonCrawlContent:
         for index in all_available_indexes()[:2]:
             yield from self.process_single_index(index["cdx-api"])
 
+    @property
+    def data_path(self):
+        return Path("data" / self.target_url)
+
     def process_single_index(self, index_cdx: str):
         index_url = urlunparse(
             (
@@ -53,7 +58,6 @@ class CommonCrawlContent:
         offset = int(record["offset"])
         length = int(record["length"])
         filename = record["filename"]
-        result = {}
 
         if record["status"] == "200":
             s3_url = f"https://data.commoncrawl.org/{filename}"
@@ -70,6 +74,7 @@ class CommonCrawlContent:
                 stream = ArchiveIterator(response.raw)
                 warc_record: ArcWarcRecord
                 for warc_record in stream:
-                    result[record["timestamp"]] = warc_record.content_stream().read()
-
-        return result
+                    timestamp: str = record["timestamp"]
+                    (self.data_path / timestamp).write_bytes(
+                        warc_record.content_stream().read()
+                    )
