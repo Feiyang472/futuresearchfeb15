@@ -9,12 +9,9 @@ import streamlit as st
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
-client = openai.OpenAI()
 # Load environment variables
 load_dotenv()
-
-# Set up OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 class ResponseTemplate(BaseModel):
