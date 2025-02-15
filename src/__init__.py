@@ -11,6 +11,7 @@ from urllib.parse import quote, quote_plus, urlencode, urljoin, urlunparse
 from urllib.request import Request, urlopen
 
 import crawl4ai
+import crawl4ai.html2text
 import requests
 import tqdm
 import tqdm.autonotebook
@@ -99,7 +100,7 @@ class CommonCrawlContent:
         return [
             (
                 datetime.datetime.strptime(path.stem, "%Y%m%d%H%M%S"),
-                print(
+                (
                     crawl4ai.html2text.html2text(
                         path.read_text(),
                     )
