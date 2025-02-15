@@ -21,13 +21,14 @@ class CommonCrawlContent:
     SERVER: ClassVar[str] = "index.commoncrawl.org"
 
     target_url: str
+    recent_num: int
 
     agent: str = (
         "cc-get-started/1.0 (Example data retrieval script; feiyangc@example.com)"
     )
 
     def gen_index_records(self):
-        for index in all_available_indexes():
+        for index in all_available_indexes()[:self.recent_num]:
             yield from self.process_single_index(index["cdx-api"])
 
     @property
@@ -74,7 +75,7 @@ class CommonCrawlContent:
                 stream = ArchiveIterator(response.raw)
                 warc_record: ArcWarcRecord
                 for warc_record in stream:
-                    timestamp: str = record["timestamp"]
+                    timestamp: str = record["timestamp"] + ".html"
                     (self.data_path / timestamp).write_bytes(
                         warc_record.content_stream().read()
                     )
