@@ -1,1 +1,1 @@
-{"value":0.5}
+{"value":0.3,"confidence_level":0.6,"summary_reason":"The Innovate UK Business Connect scheme offers a variety of funding opportunities, but there is no specific mention of fintech-related grants in the provided information. While some generic business growth and innovation loans may be accessible for fintech startups, the lack of targeted support and the general nature of the offerings result in a moderately supportive rating. My confidence is moderate due to the generic nature of the available support and the absence of fintech-specific initiatives."}

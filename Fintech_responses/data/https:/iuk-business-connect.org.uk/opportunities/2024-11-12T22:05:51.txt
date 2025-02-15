@@ -1,1 +1,1 @@
-{"value":0.8}
+{"value":0.5,"confidence_level":0.7,"summary_reason":"The Innovate UK grant scheme has a broad array of opportunities, including sectors like digital and AI, which can be tangentially related to fintech. However, there are no specific grants targeting fintech directly. The presence of related sectors and the variety of funding types suggest moderate support, but the lack of targeted fintech initiatives limits its favorability for fintech start-ups."}

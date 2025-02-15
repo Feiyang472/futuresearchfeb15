@@ -1,1 +1,1 @@
-{"value":0.8}
+{"value":0.6,"confidence_level":0.8,"summary_reason":"The Innovate UK grant scheme provides several opportunities relevant to the Fintech field, such as the Innovation Exchange challenges and Cyber Security Adoption events. These schemes are accessible and offer substantial funding opportunities, making them supportive for Fintech startups. However, the variety of grants specifically mentioning Fintech could be broader, hence a moderate score."}

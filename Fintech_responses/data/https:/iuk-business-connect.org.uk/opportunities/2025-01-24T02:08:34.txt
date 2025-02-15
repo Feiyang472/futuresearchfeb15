@@ -1,1 +1,1 @@
-{"value":0.8}
+{"value":0.5,"confidence_level":0.8,"summary_reason":"The Innovate UK grant scheme offers multiple opportunities relevant to fintech, such as the Cyber Security Academic Startup Accelerator Programme and the Innovation Exchange Challenge for cybersecurity adoption in fintech. These opportunities are accessible to various entities like SMEs and academia, making them fairly supportive. However, the grants are not exclusively focused on fintech, which slightly limits their favorability."}

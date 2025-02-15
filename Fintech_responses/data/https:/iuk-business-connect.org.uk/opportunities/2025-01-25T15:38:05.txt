@@ -1,1 +1,1 @@
-{"value":0.8}
+{"value":0.5,"confidence_level":0.8,"summary_reason":"The Innovate UK grant scheme is moderately supportive of the Fintech sector. While there are several relevant opportunities such as the Cyber Security Adoption challenge and the European Space Agency's call for technology in the insurance sector, the number of direct Fintech-specific grants is limited. However, the presence of broader digital and AI opportunities indicates potential support."}
