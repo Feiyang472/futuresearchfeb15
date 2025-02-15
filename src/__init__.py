@@ -10,6 +10,8 @@ from urllib.parse import quote, quote_plus, urlencode, urljoin, urlunparse
 from urllib.request import Request, urlopen
 
 import requests
+import tqdm
+import tqdm.autonotebook
 from warcio.archiveiterator import ArchiveIterator
 from warcio.recordloader import ArcWarcRecord
 
@@ -21,14 +23,14 @@ class CommonCrawlContent:
     SERVER: ClassVar[str] = "index.commoncrawl.org"
 
     target_url: str
-    recent_num: int
+    recent_num: int = 2
 
     agent: str = (
         "cc-get-started/1.0 (Example data retrieval script; feiyangc@example.com)"
     )
 
     def gen_index_records(self):
-        for index in all_available_indexes()[:self.recent_num]:
+        for index in all_available_indexes()[: self.recent_num]:
             yield from self.process_single_index(index["cdx-api"])
 
     @property
@@ -82,4 +84,6 @@ class CommonCrawlContent:
 
     def save_all(self):
         self.data_path.mkdir(exist_ok=True, parents=True)
-        list(map(self.iter_pages, self.gen_index_records()))
+        list(
+            map(self.iter_pages, tqdm.autonotebook.tqdm(list(self.gen_index_records())))
+        )
