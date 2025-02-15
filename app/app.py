@@ -187,9 +187,9 @@ def generate_favorability_data(topic1, topic2, start_date, end_date):
 
 
 if __name__ == "__main__":
-    st.set_page_config(page_title="Topic Favorability Comparison", layout="wide")
+    st.set_page_config(page_title="Hoogle: 4D Historical Google", layout="wide")
 
-    st.title("Topic Favorability Comparison Over Time")
+    st.title("Policy stability: start-up grant schemes")
 
     col1, col2 = st.columns(2)
 
@@ -205,8 +205,8 @@ if __name__ == "__main__":
     # start_date = st.date_input("Start date", value=pd.to_datetime("2023-01-01"))
     # end_date = st.date_input("End date", value=pd.to_datetime("2023-12-31"))
 
-    if st.button("Generate Favorability Data and Features"):
-        with st.spinner("Generating features and data..."):
+    if st.button("Run"):
+        with st.spinner("Assessing historical websites..."):
             scraper = CommonCrawlContent(policy_url, -1)
 
             structured_result = scraper.gen_chat_response(field=field)
@@ -284,9 +284,11 @@ if __name__ == "__main__":
     #     else:
     #         st.error("Error: End date must be after the start date.")
 
-    st.sidebar.header("About")
+    st.sidebar.header("Problem Statement")
     st.sidebar.info(
-        "This Streamlit app compares the favorability of two topics over time. "
-        "Enter the topics you want to compare, select a date range, and click 'Generate Favorability Data and Features' "
-        "to see a time series visualization of their relative favorability, along with key features and events."
+        "I'm a start-up founder, planning to apply to grants in a couple of years."
+        "\n"
+        "I want to know if the future grant environment would be favourable, by assessing how stable the policy landscape has been in the past."
+        "\n"
+        "Hoogle (Historical Google) helps me do exactly that."
     )
