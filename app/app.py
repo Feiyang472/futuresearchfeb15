@@ -148,6 +148,7 @@ client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class ResponseTemplate(BaseModel):
     value: float
+    summary_reason: str
 
 
 def generate_policy(field):
